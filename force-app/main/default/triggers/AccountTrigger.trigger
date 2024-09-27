@@ -18,6 +18,8 @@ For this lesson, students have two options:
 trigger AccountTrigger on Account (before insert, after insert){
     List<Contact> defaultContacts = new List<Contact>();
     if(Trigger.isBefore == true){
+
+        
         for(Account a : Trigger.new){
             //Lists of Billing and Shipping Fields
             List<String> fieldList = new List<String>{'Street','City', 'State','PostalCode', 'Country'};
