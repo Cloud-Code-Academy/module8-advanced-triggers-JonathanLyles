@@ -1,4 +1,4 @@
-public with sharing class AccountTriggerHandler {
+public with sharing class AccountTriggerHandler extends TriggerHandler {
     public AccountTriggerHandler() {
 
     }
