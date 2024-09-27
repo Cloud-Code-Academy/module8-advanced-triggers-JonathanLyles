@@ -27,12 +27,23 @@ Remember:
 Always ensure that your helper methods are bulk-safe to handle multiple records efficiently. 
 */
 public with sharing class AccountHelper {
-    
-    public void setTypeProspect(SObject objects){
 
+    List<Contact> defaultContacts = new List<Contact>();
+    
+    public void setTypeProspect(List<Account> triggerNewList){
+        for(Account acc : triggerNewList){
+            //If Type is null or empty assign 'Prospect'
+            if(acc.Type == null){
+                acc.Type = 'Prospect';
+            }
+        }
     }
 
     void addressCopy(){
+
+         //Lists of Billing and Shipping Fields
+         List<String> fieldList = new List<String>{'Street','City', 'State','PostalCode', 'Country'};
+            
 
     }
 
