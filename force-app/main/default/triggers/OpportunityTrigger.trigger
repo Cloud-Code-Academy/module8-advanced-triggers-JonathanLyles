@@ -17,6 +17,6 @@ Remember, whichever option you choose, ensure that the trigger is activated and 
 */
 trigger OpportunityTrigger on Opportunity (before update, after update, before delete) {
 
-    new AccountTriggerHandler().run();
-    
+    new OpportunityTriggerHandler().run();
+
 } 
