@@ -3,9 +3,7 @@ public with sharing class OpportunityHelper {
     List<Opportunity> triggerList = new List<Opportunity>();
 
     public OpportunityHelper(List<Opportunity> triggerList){
-        System.debug('OpportunityHelper constructor');
-        System.debug('List that was passed into the constructor: ' + triggerList);
-        
+
         List<Id> triggerListAccountIds = new List<Id>();
         for(Opportunity opp : triggerList){
             triggerListAccountIds.add(opp.AccountId);
@@ -13,7 +11,9 @@ public with sharing class OpportunityHelper {
 
         this.triggerList = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
 
-    }    /*
+    }    
+    
+    /*
     - assignPrimaryContact:
     - Assigns a primary contact with the title of 'VP Sales' to undeleted Opportunities.
     - Only updates the Opportunities that don't already have a primary contact.
