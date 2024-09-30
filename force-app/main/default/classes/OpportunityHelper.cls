@@ -41,8 +41,9 @@ public with sharing class OpportunityHelper {
         update triggerList;
     }
 
-    public void setOpportunityType(){
+    public void setDefaultOpportunityType(){
         // Set default Type for new Opportunities
+        System.debug('++++++ setOpportunityType ++++++');
         for(Opportunity opp : triggerList){
             if (opp.Type == null){
                 opp.Type = 'New Customer';
