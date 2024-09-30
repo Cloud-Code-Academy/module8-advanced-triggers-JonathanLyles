@@ -53,8 +53,30 @@ public with sharing class OpportunityHelper {
         }
     }
 
+    /*
+    * deleteCloseWonOpportunity()
+    * When an opportunity is deleted prevent the deletion of a closed won opportunity if the account industry is 'Banking'.
+    * Trigger should only fire on delete.
+    */
     public void deleteCloseWonOpportunity(){
+        List<Id> accIds = new List<Id>();
+        for(Opportunity opp : triggerList){
+            accIds.add(opp.AccountId);
+        }
+        List<Account> relatedAccounts = [SELECT Id, Industry FROM Account WHERE Id IN :accIds];
+
+        Map<Id, String> accIdIndustryMap = new Map<Id, String>();
+
+        for(Account acc : relatedAccounts){
+            accIdIndustryMap.put(acc.Id, acc.Industry);
+        }
         
+        for(Opportunity opp : triggerList){
+            System.debug(triggerList);
+            if( accIdIndustryMap.get(opp.AccountId) == 'Banking' && opp.StageName == 'Closed Won'){
+                opp.addError('Cannot delete closed opportunity');
+            }
+        }
     }
 
 }
