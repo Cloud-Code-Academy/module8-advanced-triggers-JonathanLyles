@@ -3,14 +3,7 @@ public with sharing class OpportunityHelper {
     List<Opportunity> triggerList = new List<Opportunity>();
 
     public OpportunityHelper(List<Opportunity> triggerList){
-
-        List<Id> triggerListAccountIds = new List<Id>();
-        for(Opportunity opp : triggerList){
-            triggerListAccountIds.add(opp.AccountId);
-        }
-
-        this.triggerList = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
-
+        this.triggerList = triggerList;
     }    
     
     /*
@@ -20,6 +13,15 @@ public with sharing class OpportunityHelper {
     */
 
     public void assignPrimaryContact(){
+
+        //For undelete you need to explicitly call the records to be updated as the records from Trigger.new are read-only
+        List<Id> triggerListAccountIds = new List<Id>();
+        for(Opportunity opp : triggerList){
+            triggerListAccountIds.add(opp.AccountId);
+        }
+
+        this.triggerList = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
+        
         List<Opportunity> opportunitiesToUpdateList = new List<Opportunity>();
         Map<Opportunity, Id> opportunitiesWithoutPrimaryContactToAccountIdMap = new Map<Opportunity, Id>();
         for(Opportunity opp : triggerList){        
