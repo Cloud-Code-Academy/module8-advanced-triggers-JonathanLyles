@@ -40,4 +40,8 @@ public with sharing class OpportunityHelper {
         }
         update triggerList;
     }
+
+    public void setOpportunityType(){
+        
+    }
 }
