@@ -6,6 +6,10 @@ public with sharing class OpportunityTriggerHandler extends TriggerHandler {
         
         newOpportunityHelper.setDefaultOpportunityType();
     }
+
+    public override void beforeDelete(){
+        
+    }
     
     public override void afterUndelete(){
         newOpportunityHelper.assignPrimaryContact();
