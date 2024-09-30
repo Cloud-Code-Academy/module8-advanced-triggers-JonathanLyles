@@ -52,4 +52,9 @@ public with sharing class OpportunityHelper {
             }
         }
     }
+
+    public void deleteCloseWonOpportunity(){
+        
+    }
+
 }
