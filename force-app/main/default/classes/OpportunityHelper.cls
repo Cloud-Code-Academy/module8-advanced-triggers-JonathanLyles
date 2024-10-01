@@ -16,12 +16,14 @@ public with sharing class OpportunityHelper {
 
         //For undelete you need to explicitly call the records to be updated as the records from Trigger.new are read-only
         List<Id> triggerListAccountIds = new List<Id>();
+        System.debug('triggerList: ' + triggerList);
+        System.debug('this.triggerList: ' + this.triggerList);
         for(Opportunity opp : triggerList){
             triggerListAccountIds.add(opp.AccountId);
         }
 
         this.triggerList = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
-        
+        System.debug(this.)
         List<Opportunity> opportunitiesToUpdateList = new List<Opportunity>();
         Map<Opportunity, Id> opportunitiesWithoutPrimaryContactToAccountIdMap = new Map<Opportunity, Id>();
         for(Opportunity opp : triggerList){        
@@ -39,13 +41,20 @@ public with sharing class OpportunityHelper {
 
         for(Opportunity opp : opportunitiesWithoutPrimaryContactToAccountIdMap.keySet()){
             opp.Primary_Contact__c = accIdConIdMap.get(opp.AccountId);
+           
+
         }
-        update triggerList;
+        
+        for(Opportunity opp: triggerList){
+            System.debug('Opp Id' + opp.Id);
+            System.debug('Account Id' + opp.AccountId);
+            System.debug('Primary_Contact__c' + opp.Primary_Contact__c);
+        }
+        
     }
 
     public void setDefaultOpportunityType(){
         // Set default Type for new Opportunities
-        System.debug('++++++ setOpportunityType ++++++');
         for(Opportunity opp : triggerList){
             if (opp.Type == null){
                 opp.Type = 'New Customer';
@@ -72,7 +81,6 @@ public with sharing class OpportunityHelper {
         }
         
         for(Opportunity opp : triggerList){
-            System.debug(triggerList);
             if( accIdIndustryMap.get(opp.AccountId) == 'Banking' && opp.StageName == 'Closed Won'){
                 opp.addError('Cannot delete closed opportunity');
             }
