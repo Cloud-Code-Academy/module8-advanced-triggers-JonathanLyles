@@ -1,8 +1,4 @@
-public with sharing class OpportunityTriggerHandler extends TriggerHandler {
-    public OpportunityTriggerHandler(){
-        //this.setMaxLoopCount(1);
-    }
-     
+public with sharing class OpportunityTriggerHandler extends TriggerHandler {     
     public override void beforeInsert(){
         OpportunityHelper newOpportunityHelper = new OpportunityHelper((List<Opportunity>) Trigger.new);
         newOpportunityHelper.setDefaultOpportunityType();
