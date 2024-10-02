@@ -23,9 +23,6 @@ public with sharing class OpportunityHelper {
         }
 
         List<Opportunity> opportunityListFromTrigger = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
-       
-        System.debug(opportunityListFromTrigger);
-
         //List<Opportunity> opportunitiesToUpdateList = new List<Opportunity>();
         
         Map<Opportunity, Id> opportunitiesWithoutPrimaryContactToAccountIdMap = new Map<Opportunity, Id>();
@@ -49,10 +46,7 @@ public with sharing class OpportunityHelper {
             //System.debug(opportunitiesToUpdate);
            
         }
-        System.debug(opportunitiesToUpdate);
-        List<Opportunity> bRecords = [SELECT Id, Primary_Contact__c FROM Opportunity WHERE AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values() LIMIT 5];
-        System.debug('Records Before: ' + bRecords);
-        
+        List<Opportunity> bRecords = [SELECT Id, Primary_Contact__c FROM Opportunity WHERE AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values() LIMIT 5];    
         try{
             update opportunitiesToUpdate;
         }catch (DmlException e) {
@@ -64,14 +58,9 @@ public with sharing class OpportunityHelper {
             
             System.debug('Error stack trace: ' + e.getStackTraceString());
         }
-        
-        
+    
         update opportunitiesToUpdate;
         List<Opportunity> aRecords = [SELECT Id, Primary_Contact__c FROM Opportunity WHERE AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values() LIMIT 5];
-        System.debug('Records After: ' + aRecords);
-
-        
-        
     }
 
     public void setDefaultOpportunityType(){
@@ -110,7 +99,6 @@ public with sharing class OpportunityHelper {
 
     // Create a new Task for newly inserted Opportunities
     public void insertTask(){
-        System.debug('********** Insert Task *************');
         List<Task> tasksToInsert = new List<Task>();
         for (Opportunity opp : triggerList){
             Task tsk = new Task();
@@ -121,9 +109,7 @@ public with sharing class OpportunityHelper {
             tsk.ActivityDate = Date.today().addDays(3);
             tasksToInsert.add(tsk);
         }
-        System.debug('Line 95');
         insert tasksToInsert;
-        System.debug('Line 97');
     }
 
     /*
@@ -132,7 +118,6 @@ public with sharing class OpportunityHelper {
     * When an opportunity is updated set the primary contact on the opportunity to the contact with the title of 'CEO'.
     */
     public void setPrimaryContact(){
-        System.debug('++++ setPrimaryContact ++++');
         List<Id> accountIds = new List<Id>();
         
         for(Opportunity opp : triggerList){
