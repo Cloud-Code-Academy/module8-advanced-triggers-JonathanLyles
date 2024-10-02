@@ -27,20 +27,57 @@ Remember:
 Always ensure that your helper methods are bulk-safe to handle multiple records efficiently. 
 */
 public with sharing class AccountHelper {
+
+    List<Contact> defaultContacts = new List<Contact>();
+
+    List<Account> triggerList = new List<Account>();
+
+    public AccountHelper(List<Account> triggerList){
+        this.triggerList = triggerList;
+    }
     
-    public void setTypeProspect(SObject objects){
-
+    public void setTypeProspect(){
+        for(Account acc : this.triggerList){
+            //If Type is null or empty assign 'Prospect'
+            if(acc.Type == null){
+                acc.Type = 'Prospect';
+            }
+        }
     }
 
-    void addressCopy(){
+    public void addressCopy(){
 
+        //Lists of Billing and Shipping Fields
+        List<String> fieldList = new List<String>{'Street','City', 'State','PostalCode', 'Country'};
+        for(Account a : this.triggerList){
+            for(String field : fieldList){
+                if(a.get('Shipping' + field) != null){
+                    // Use the set method correctly
+                    a.put('Billing' + field, a.get('Shipping' + field));
+                }
+            }
+        }
+    }
+        
+    public void setRating () {
+
+        for(Account a : this.triggerList){
+            if(a.get('Rating') != 'Hot'){
+                if(a.get('Phone') != null && a.get('Website') != null && a.get('Fax') != null){
+                    a.put('Rating','Hot');
+                }
+            }
+        }
     }
 
-    //[public | private ] [static] data_type setRating (input parameters) {
-    //  The body of the method
-    //}
-
-    //[public | private ] [static] data_type defaultContact (input parameters) {
-    //  The body of the method
-    //}
+    public void defaultContact () {
+        
+        for(Account a : this.triggerList){
+            Contact newCon = new Contact(LastName = 'DefaultContact', Email = 'default@email.com', AccountId = a.Id);
+            defaultContacts.add(newCon);
+        }     
+        if(defaultContacts.size() > 0){
+            insert defaultContacts;
+        }    
+    }
 }
