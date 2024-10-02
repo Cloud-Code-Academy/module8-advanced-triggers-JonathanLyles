@@ -16,21 +16,25 @@ public with sharing class OpportunityHelper {
 
         //For undelete you need to explicitly call the records to be updated as the records from Trigger.new are read-only
         List<Id> triggerListAccountIds = new List<Id>();
-        System.debug('triggerList: ' + triggerList);
-        System.debug('this.triggerList: ' + this.triggerList);
+        List<Opportunity> opportunitiesToUpdate = new List<Opportunity>();
+        
         for(Opportunity opp : triggerList){
             triggerListAccountIds.add(opp.AccountId);
         }
 
-        this.triggerList = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
-        System.debug(this.)
-        List<Opportunity> opportunitiesToUpdateList = new List<Opportunity>();
+        List<Opportunity> opportunityListFromTrigger = [SELECT Id, Primary_Contact__c, AccountId FROM Opportunity WHERE AccountId IN :triggerListAccountIds];
+       
+        System.debug(opportunityListFromTrigger);
+
+        //List<Opportunity> opportunitiesToUpdateList = new List<Opportunity>();
+        
         Map<Opportunity, Id> opportunitiesWithoutPrimaryContactToAccountIdMap = new Map<Opportunity, Id>();
-        for(Opportunity opp : triggerList){        
+        for(Opportunity opp : opportunityListFromTrigger){        
             if(opp.Primary_Contact__c == null){
                 opportunitiesWithoutPrimaryContactToAccountIdMap.put(opp, opp.AccountId);
             }
         }
+
         List<Contact> vpSalesContactList = [SELECT Id, Name, Title, AccountId FROM CONTACT WHERE Title = 'VP Sales' AND AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values()];
 
         Map<Id, Id> accIdConIdMap = new Map<Id, Id>();
@@ -41,15 +45,32 @@ public with sharing class OpportunityHelper {
 
         for(Opportunity opp : opportunitiesWithoutPrimaryContactToAccountIdMap.keySet()){
             opp.Primary_Contact__c = accIdConIdMap.get(opp.AccountId);
+            opportunitiesToUpdate.add(opp);
+            //System.debug(opportunitiesToUpdate);
            
-
+        }
+        System.debug(opportunitiesToUpdate);
+        List<Opportunity> bRecords = [SELECT Id, Primary_Contact__c FROM Opportunity WHERE AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values() LIMIT 5];
+        System.debug('Records Before: ' + bRecords);
+        
+        try{
+            update opportunitiesToUpdate;
+        }catch (DmlException e) {
+            // Output the error message to the debug log
+            System.debug('An error occurred: ' + e.getMessage());
+            // Optionally, you can output more details such as:
+            System.debug('Error status code: ' + e.getDmlStatusCode(0));
+            System.debug('Error field: ' + e.getDmlFields(0));
+            
+            System.debug('Error stack trace: ' + e.getStackTraceString());
         }
         
-        for(Opportunity opp: triggerList){
-            System.debug('Opp Id' + opp.Id);
-            System.debug('Account Id' + opp.AccountId);
-            System.debug('Primary_Contact__c' + opp.Primary_Contact__c);
-        }
+        
+        update opportunitiesToUpdate;
+        List<Opportunity> aRecords = [SELECT Id, Primary_Contact__c FROM Opportunity WHERE AccountId IN :opportunitiesWithoutPrimaryContactToAccountIdMap.values() LIMIT 5];
+        System.debug('Records After: ' + aRecords);
+
+        
         
     }
 
